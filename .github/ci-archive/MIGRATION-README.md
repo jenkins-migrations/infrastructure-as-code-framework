@@ -24,8 +24,9 @@ implemented as a GitHub Actions job-step condition.
 | deploy on `master` | push to `refs/heads/master` condition |
 
 The replacement workflow is `.github/workflows/dotnet-build.yml`. It runs for
-pushes, pull requests, and manual dispatches. All third-party actions are
-pinned to immutable commits.
+pushes and manual dispatches. Pull request runs are intentionally excluded:
+this workflow executes repository code on a self-hosted runner. All
+third-party actions are pinned to immutable commits.
 
 ## Required runner configuration
 
