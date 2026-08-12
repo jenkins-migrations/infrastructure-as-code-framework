@@ -1,0 +1,59 @@
+---
+name: .NET build and deploy
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-test-deploy:
+    runs-on: [self-hosted, Windows]
+    env:
+      PRODUCT_VERSION: 1.0.0.${{ github.run_number }}
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4.4.0
+
+      - name: Restore
+        shell: cmd
+        run: nuget restore SolutionName.sln
+
+      - name: Build
+        shell: cmd
+        run: MSBuild SolutionName.sln /p:Configuration=Release /p:Platform="Any CPU" /p:ProductVersion=%PRODUCT_VERSION%
+
+      - name: Test
+        shell: cmd
+        run: VSTest ProjectName.Tests\bin\Release\ProjectName.Tests.dll
+
+      - name: Archive test results
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4.6.2
+        with:
+          name: test-results
+          path: "**/*.trx"
+          if-no-files-found: error
+
+      - name: Archive build outputs
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4.6.2
+        with:
+          name: build-artifacts
+          path: ProjectName/bin/Release/**/*
+          if-no-files-found: error
+
+      - name: Archive build report
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4.6.2
+        with:
+          name: build-report
+          path: ProjectName/bin/Release/index.html
+          if-no-files-found: error
+
+      - name: Deploy
+        # Preserve Jenkins's branch-only deploy behavior for manual runs.
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        shell: cmd
+        run: xcopy ProjectName\bin\Release\* C:\Deploy\ProjectName\ /E /Y
