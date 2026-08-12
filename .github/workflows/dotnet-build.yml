@@ -53,6 +53,7 @@ jobs:
           if-no-files-found: error
 
       - name: Deploy
+        # Preserve Jenkins's branch-only deploy behavior for manual runs.
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         shell: cmd
         run: xcopy ProjectName\bin\Release\* C:\Deploy\ProjectName\ /E /Y
