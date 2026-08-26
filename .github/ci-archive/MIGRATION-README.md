@@ -25,7 +25,7 @@ Migrated the repository's scripted Jenkins pipeline from `Jenkinsfile` to `.gith
 - Workflow file: `.github/workflows/dotnet-build.yml`
 - Runner: `windows-latest`
 - Triggers:
-  - `push`
+  - `push` to `master`
   - `pull_request`
   - `workflow_dispatch`
 - Required permissions: `contents: read`
