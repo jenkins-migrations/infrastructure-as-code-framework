@@ -2,8 +2,6 @@ name: .NET build and deploy
 
 on:
   push:
-    branches:
-      - '**'
   pull_request:
   workflow_dispatch:
 
@@ -66,7 +64,21 @@ jobs:
           path: ProjectName/bin/Release/index.html
           if-no-files-found: error
 
+  deploy:
+    name: Deploy to master target
+    needs: build-test-archive
+    if: github.ref == 'refs/heads/master'
+    runs-on:
+      - self-hosted
+      - Windows
+
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
+        with:
+          name: project-release
+          path: ProjectName\bin\Release
+
       - name: Deploy to master target
-        if: github.ref == 'refs/heads/master'
         shell: pwsh
         run: xcopy ProjectName\bin\Release\* C:\Deploy\ProjectName\ /E /Y

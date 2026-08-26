@@ -39,7 +39,7 @@ Migrated the repository's scripted Jenkins pipeline from `Jenkinsfile` to `.gith
 | `Build` | PowerShell step running `msbuild` with Release configuration and run-number product version |
 | `Test` | PowerShell step running `vstest.console.exe`, followed by TRX artifact upload |
 | `Archive` | `actions/upload-artifact` pinned to commit SHA `ea165f8d65b6e75b540449e92b4886f43607fa02` (`v4`) for build outputs and HTML report |
-| `Deploy` | PowerShell `xcopy` step gated to `refs/heads/master` |
+| `Deploy` | Separate self-hosted Windows job gated to `refs/heads/master`; downloads the `project-release` artifact and runs the original `xcopy` command |
 
 ## Secrets and Variables
 
